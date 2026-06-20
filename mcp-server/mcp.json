@@ -1,11 +1,12 @@
 {
-  "$comment": "Client config for the ContextOS MCP server. Use ABSOLUTE paths. CONTEXTOS_BUNDLE points to a Context Handoff bundle exported by the engine (ContextOS.export()); omit it to run with seeded demo context.",
+  "$comment": "Client config for the ContextOS MCP server. Use ABSOLUTE paths. CONTEXTOS_BUNDLE points to a Context Handoff bundle exported by the engine (ContextOS.export()); omit it to run with seeded demo context. CODEBASE_PATH (optional) points to a repo so the `ask` tool can ground answers in code.",
   "mcpServers": {
     "contextos": {
       "command": "node",
       "args": ["/abs/path/to/contextos/mcp-server/src/server.ts"],
       "env": {
-        "CONTEXTOS_BUNDLE": "/abs/path/to/handoff.json"
+        "CONTEXTOS_BUNDLE": "/abs/path/to/handoff.json",
+        "CODEBASE_PATH": "/abs/path/to/your/repo"
       }
     }
   }

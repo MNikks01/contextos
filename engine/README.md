@@ -9,12 +9,14 @@ The core engine for project #1, the flagship. ContextOS gives AI-assisted teams 
 - ✅ **File generation** — renders `CLAUDE.md` / `AGENTS.md` / `llms.txt` that a fresh AI session loads to start warm.
 - ✅ **Context Handoff** — `export` a portable bundle (open format, v1.0) → `import`/restore into a fresh session → `diff` two bundles.
 - ✅ **Memory extraction** — propose decisions/conventions from free text (PR/chat/commit); heuristic + zero-network (LLM-refinable later).
-- ✅ **15/15 tests pass** (`scripts/test.ts`): round-trip fidelity, generated-file content, extraction precision, supersede, diff.
+- ✅ **Grounded answers (the wedge composition)** — `GroundedContext` reuses the vendored #2 retrieval engine to answer a question grounded in BOTH the team's context AND the code, citing context items + code `file:line`. This is what no single AI tool does.
+- ✅ **22/22 tests pass** (`scripts/test.ts` + `scripts/test-grounded.ts`): round-trip fidelity, generated-file content, extraction precision, supersede, diff, and grounded retrieval (money question → cents convention + order code; card question → no-log convention + payments code; irrelevant context stays out).
 
 ## Run it
 ```bash
-node scripts/demo.ts   # capture context -> extract from a PR -> export Handoff -> restore -> diff
-node scripts/test.ts   # 15 assertions
+node scripts/demo.ts            # capture context -> extract from a PR -> export Handoff -> restore -> diff
+node scripts/demo-grounded.ts   # answer questions grounded in team context + code (reuses #2)
+node scripts/test.ts && node scripts/test-grounded.ts   # 22 assertions
 ```
 
 ## What the demo shows
@@ -28,16 +30,19 @@ src/
   generate-files.ts # render CLAUDE.md / AGENTS.md / llms.txt
   handoff.ts        # export / import / diff the portable bundle (the open format)
   extract.ts        # memory extraction from text (heuristic; LLM-refinable)
-  index.ts          # ContextOS: addDecision/Convention/Glossary, export/import, propose/accept
+  grounded.ts       # GroundedContext: answer over team context + code (the wedge composition)
+  codebase/         # VENDORED #2 retrieval engine (re-vendor: scripts/vendor-codebase-engine.mjs)
+  index.ts          # ContextOS: addDecision/Convention/Glossary, export/import, propose/accept, grounded()
 scripts/
   demo.ts           # the Context Handoff, end to end
-  test.ts           # 15 assertions
+  demo-grounded.ts  # grounded answers over context + a sample repo
+  test.ts / test-grounded.ts   # 22 assertions
 ```
 
 ## How it composes the rest of the wedge
-- **Reuses #2 (Codebase Intelligence)** for codebase-grounded answers ("how does X work, given our decisions + the code").
-- **Reuses #3 (MCP Server Generator)** to expose ContextOS over MCP and to wire external tools.
-- Next: an MCP server (`load_context`, `propose_context`, `ask`) + a web surface + the #2 retrieval integration.
+- ✅ **Reuses #2 (Codebase Intelligence)** — vendored into `src/codebase/`; `GroundedContext` answers grounded in code + team context.
+- ✅ **MCP server** ([`../mcp-server`](../mcp-server)) — `load_context` / `propose_context` / `add_context` / **`ask`** (grounded). Verified over the protocol.
+- Next: a web surface; and the production swaps below (real LLM extraction + answers, Postgres/RLS, pgvector).
 
 ## Production swaps (when keys/infra are added)
 | Engine (now) | Production |

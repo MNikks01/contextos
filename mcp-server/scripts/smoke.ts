@@ -6,7 +6,9 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const child = spawn("node", [resolve(here, "../src/server.ts")], { stdio: ["pipe", "pipe", "inherit"] });
+// Point `ask` at a real codebase (the engine's own source) so it can ground in code.
+const env = { ...process.env, CODEBASE_PATH: resolve(here, "../../engine/src") };
+const child = spawn("node", [resolve(here, "../src/server.ts")], { stdio: ["pipe", "pipe", "inherit"], env });
 
 let buf = "";
 const pending = new Map<number, (m: any) => void>();
@@ -36,7 +38,10 @@ assert(init.result?.serverInfo?.name === "contextos", `initialize -> ${init.resu
 send({ jsonrpc: "2.0", method: "notifications/initialized" });
 
 const names = ((await request(2, "tools/list", {})).result?.tools ?? []).map((t: any) => t.name);
-assert(["load_context", "list_context", "propose_context", "add_context"].every((n) => names.includes(n)), `tools/list -> ${names.join(", ")}`);
+assert(
+  ["load_context", "list_context", "propose_context", "add_context", "ask"].every((n) => names.includes(n)),
+  `tools/list -> ${names.join(", ")}`,
+);
 
 const lc = await request(3, "tools/call", { name: "load_context", arguments: {} });
 assert((lc.result?.content?.[0]?.text ?? "").includes("integer cents"), "load_context -> warm CLAUDE.md with seeded convention");
@@ -48,6 +53,10 @@ assert(/feature flags/i.test(pcText) && /secrets/i.test(pcText), "propose_contex
 await request(5, "tools/call", { name: "add_context", arguments: { type: "convention", title: "Trunk-based dev", body: "Short-lived branches; merge to main daily." } });
 const ls = await request(6, "tools/call", { name: "list_context", arguments: { type: "convention" } });
 assert((ls.result?.content?.[0]?.text ?? "").includes("Trunk-based dev"), "add_context then list_context shows the new item");
+
+// grounded ask over the indexed codebase
+const ga = await request(7, "tools/call", { name: "ask", arguments: { question: "where is BM25 lexical retrieval implemented?" } });
+assert((ga.result?.content?.[0]?.text ?? "").includes("lexical.ts"), "ask grounds in code (cites lexical.ts)");
 
 child.kill();
 console.log("\n✅ ContextOS MCP server works end-to-end over MCP.");

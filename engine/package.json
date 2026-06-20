@@ -6,7 +6,9 @@
   "description": "ContextOS (#1) engine — durable team context + the Context Handoff: capture decisions/conventions/glossary, export a portable bundle (+ generated CLAUDE.md / AGENTS.md / llms.txt), restore into any AI tool, diff, and extract context from text. Node native TypeScript; zero-network.",
   "scripts": {
     "demo": "node scripts/demo.ts",
-    "test": "node scripts/test.ts"
+    "demo:grounded": "node scripts/demo-grounded.ts",
+    "test": "node scripts/test.ts && node scripts/test-grounded.ts",
+    "vendor:check": "node scripts/vendor-codebase-engine.mjs --check"
   },
   "engines": { "node": ">=22.18" }
 }

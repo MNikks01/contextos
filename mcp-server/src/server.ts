@@ -11,6 +11,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { readFile } from "node:fs/promises";
 import { ContextOS } from "../../engine/src/index.ts";
+import { ingestDir } from "../../engine/src/codebase/ingest.ts";
 
 // Load a bundle if provided; otherwise seed a small demo so the server is never empty.
 let os: ContextOS;
@@ -25,6 +26,14 @@ if (bundlePath) {
   os.addDecision("Postgres + Drizzle", "We chose Postgres + Drizzle for the core data model.");
   os.addGlossary("Idempotency key", "A client-supplied key that makes a POST safe to retry.");
   console.error(`[contextos-mcp] seeded demo context: ${os.store.active().length} items (set CONTEXTOS_BUNDLE to load real context)`);
+}
+
+// Optionally index a codebase so `ask` can ground answers in code + team context.
+const grounded = os.grounded();
+const codePath = process.env.CODEBASE_PATH;
+if (codePath) {
+  const stats = await grounded.indexCode(await ingestDir(codePath));
+  console.error(`[contextos-mcp] indexed codebase ${codePath}: ${stats.files} files, ${stats.chunks} chunks`);
 }
 
 const server = new McpServer({ name: "contextos", version: "0.1.0" });
@@ -73,6 +82,30 @@ server.tool(
   async ({ type, title, body }) => {
     os.store.add({ type, title, body });
     return { content: [{ type: "text", text: `Added ${type}: ${title}` }] };
+  },
+);
+
+server.tool(
+  "ask",
+  "Answer a question grounded in BOTH the team's context (decisions/conventions) AND the codebase " +
+    "(if one is indexed via CODEBASE_PATH). Returns relevant team context + code citations (file:line), " +
+    "and a written answer when an LLM key is set. Use for 'how/where/why does X work here' questions.",
+  { question: z.string().describe("A question about how this team builds X") },
+  async ({ question }) => {
+    const r = await grounded.ask(question, 6);
+    const parts: string[] = [];
+    if (r.contextItems.length) {
+      parts.push("Team context:\n" + r.contextItems.map((i) => `- [${i.type}] ${i.title}: ${i.body}`).join("\n"));
+    }
+    if (r.codeCitations.length) {
+      parts.push(
+        "Code:\n" +
+          r.codeCitations.map((c) => `- ${c.path}:${c.startLine}-${c.endLine}${c.symbol ? ` (${c.symbol})` : ""}`).join("\n"),
+      );
+    }
+    if (r.grounded) parts.unshift(`Answer: ${r.answer}`);
+    if (parts.length === 0) parts.push("No relevant team context or code found.");
+    return { content: [{ type: "text", text: parts.join("\n\n") }] };
   },
 );
 
