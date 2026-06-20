@@ -1,0 +1,17 @@
+{
+  "name": "contextos-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP server exposing ContextOS team context — load_context, list_context, propose_context, add_context — so any MCP host (Claude Desktop, Cursor, agents) starts warm with the team's decisions and conventions.",
+  "bin": { "contextos-mcp": "src/server.ts" },
+  "scripts": {
+    "start": "node src/server.ts",
+    "smoke": "node scripts/smoke.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.0"
+  },
+  "engines": { "node": ">=22.18" }
+}

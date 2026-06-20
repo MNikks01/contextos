@@ -1,0 +1,31 @@
+{
+  "$comment": "ContextOS MCP client config template. The 'contextos' server exposes team context/codebase to any MCP host (Claude Desktop, Cursor, Claude Code). The others are integrations ContextOS's hub manages. Replace ${VARS} with secrets from your environment/secret manager — never commit real tokens.",
+  "mcpServers": {
+    "contextos": {
+      "url": "https://api.contextos.dev/mcp",
+      "transport": "streamable-http",
+      "headers": { "Authorization": "Bearer ${CONTEXTOS_API_KEY}" },
+      "description": "Query team context, ask the codebase, record decisions, load context bundles."
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" }
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "${DATABASE_URL_READONLY}"],
+      "description": "Read-only DB access via parameterized queries."
+    },
+    "slack": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-slack"],
+      "env": { "SLACK_BOT_TOKEN": "${SLACK_BOT_TOKEN}", "SLACK_TEAM_ID": "${SLACK_TEAM_ID}" }
+    },
+    "notion": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-notion"],
+      "env": { "NOTION_API_KEY": "${NOTION_API_KEY}" }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "contextos-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "ContextOS (#1) engine — durable team context + the Context Handoff: capture decisions/conventions/glossary, export a portable bundle (+ generated CLAUDE.md / AGENTS.md / llms.txt), restore into any AI tool, diff, and extract context from text. Node native TypeScript; zero-network.",
+  "scripts": {
+    "demo": "node scripts/demo.ts",
+    "test": "node scripts/test.ts"
+  },
+  "engines": { "node": ">=22.18" }
+}

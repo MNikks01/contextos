@@ -1,0 +1,43 @@
+# ContextOS
+
+> The context & governance operating system for AI-assisted engineering teams — Cursor + Claude Code + Notion + GitHub + MCP + a persistent memory layer, fused. Persistent shared memory, codebase intelligence, a governed MCP integration hub, and observability/guardrails over all AI work. Flagship capability: the Context Handoff (export context from one AI session/tool, restore it warm into another). Project #1 (flagship) of the AI Startup Lab; built after the #2 (retrieval) and #3 (MCP) engines it reuses. Spec-first; no app code yet by design.
+
+## Start here (agents)
+- [AI_CONTEXT](./AI_CONTEXT.md): Instant one-file orientation — read FIRST
+- [PROJECT_MEMORY](./PROJECT_MEMORY.md): Current state, open questions, next steps
+- [DECISIONS](./DECISIONS.md): The 11 inherited + 7 ContextOS-specific binding decisions
+- [CLAUDE.md](./CLAUDE.md): Rules for Claude Code · [AGENTS.md](./AGENTS.md): cross-tool agent rules
+- [mcp.json](./mcp.json): MCP client config template
+
+## Product
+- [README](./README.md): What/why/who/how + capability ladder
+- [VISION](./VISION.md): OS for AI-assisted engineering; own the context layer
+- [PROBLEM](./PROBLEM.md): Context loss, onboarding, governance gaps
+- [CUSTOMERS](./CUSTOMERS.md): ICPs (SaaS teams, agencies, enterprise)
+- [FEATURES](./FEATURES.md): MVP→V1→V2→V3 inventory
+- [USER_STORIES](./USER_STORIES.md): 100+ stories
+
+## Engineering
+- [ARCHITECTURE](./ARCHITECTURE.md): 5 planes; modular monolith→services; scale 10→100K (Mermaid)
+- [TECH_STACK](./TECH_STACK.md): Next.js/NestJS/Postgres+pgvector/Redis/MCP + why
+- [DATABASE](./DATABASE.md): Entities, ERD, DDL, RLS multi-tenancy, indexing
+- [API_DESIGN](./API_DESIGN.md): REST/GraphQL/internal/MCP contracts
+- [AI_ARCHITECTURE](./AI_ARCHITECTURE.md): models/embeddings/retrieval/memory/tools/agents/evals + train-vs-RAG strategy
+- [RAG](./RAG.md): RAG over code + curated context
+- [MCP](./MCP.md): Hub (inbound) + server (outbound)
+- [AGENT_DESIGN](./AGENT_DESIGN.md): Single/multi-agent + communication
+
+## Production
+- [SECURITY](./SECURITY.md), [OBSERVABILITY](./OBSERVABILITY.md), [GUARDRAILS](./GUARDRAILS.md), [DEVOPS](./DEVOPS.md)
+
+## Execution
+- [TASKS](./TASKS.md): Epic→Feature→Story→Task · [SPRINTS](./SPRINTS.md): 2-week sprints to MVP→V1→V2
+
+## Business
+- [PRICING](./PRICING.md) (+ unit economics), [GTM](./GTM.md) (CAC/retention/expansion), [SALES](./SALES.md) (TAM/SAM/SOM, fundraising, acquirers, exit), [RISKS](./RISKS.md) (+ moat/defensibility), [HIRING](./HIRING.md), [OPEN_SOURCE](./OPEN_SOURCE.md), [RESUME_VALUE](./RESUME_VALUE.md)
+
+## Status
+- [CONTEXTOS_COMPLETION_REPORT](./CONTEXTOS_COMPLETION_REPORT.md): documents, word counts, gaps, next steps
+
+## Key decisions (see DECISIONS.md / ../DECISION_LOG.md)
+D-001 no model training · D-002 wedge #3→#2→#1 · D-003 Claude+abstraction · D-004 Postgres+pgvector · D-010 customer code never trains any model · D-011 spec-first.
