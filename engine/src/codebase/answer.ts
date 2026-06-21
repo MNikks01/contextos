@@ -35,7 +35,7 @@ export class ClaudeAnswer implements AnswerProvider {
       signal: AbortSignal.timeout(30000),
     });
     if (!res.ok) throw new Error(`Anthropic ${res.status}`);
-    const data: { content?: { text?: string }[] } = await res.json();
+    const data = (await res.json()) as { content?: { text?: string }[] };
     return data.content?.[0]?.text?.trim() ?? "(no answer)";
   }
 }

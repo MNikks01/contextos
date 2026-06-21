@@ -7,19 +7,20 @@ on:
 permissions:
   contents: read
 jobs:
-  engine:
-    name: engine tests
+  test:
+    name: typecheck + unit + integration
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-      - name: Run engine tests
-        working-directory: engine
-        run: node scripts/test.ts && node scripts/test-grounded.ts
+      - name: Install dev tooling
+        run: npm install --no-audit --no-fund
+      - name: Test (typecheck + unit + integration)
+        run: npm test
   mcp:
-    name: mcp server smoke
+    name: mcp server contract smoke
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

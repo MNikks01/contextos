@@ -7,7 +7,7 @@
   "scripts": {
     "demo": "node scripts/demo.ts",
     "demo:grounded": "node scripts/demo-grounded.ts",
-    "test": "node scripts/test.ts && node scripts/test-grounded.ts",
+    "test": "node --test test/*.test.ts",
     "vendor:check": "node scripts/vendor-codebase-engine.mjs --check"
   },
   "engines": { "node": ">=22.18" }
