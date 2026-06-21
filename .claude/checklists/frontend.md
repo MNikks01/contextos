@@ -48,10 +48,10 @@
 - [ ] Lazy loading / image optimization (WebP/AVIF) — _(few/no images)_
 
 ### 11. Accessibility — ✅ (reference a11y pass done)
-- [x] Semantic HTML (landmark regions via \`aria-labelledby\`, \`<ul>/<li>\`, heading hierarchy)
-- [x] Labels for every control (\`htmlFor\` + \`sr-only\`; no placeholder-only inputs)
-- [x] Keyboard operable; [x] visible focus (\`focus-visible\` outlines); [x] AA contrast (darkened tokens)
-- [x] ARIA: \`role="alert"\` + \`aria-live\` for errors/results; \`aria-busy\` on async buttons
+- [x] Semantic HTML (landmark regions via `aria-labelledby`, `<ul>/<li>`, heading hierarchy)
+- [x] Labels for every control (`htmlFor` + `sr-only`; no placeholder-only inputs)
+- [x] Keyboard operable; [x] visible focus (`focus-visible` outlines); [x] AA contrast (darkened tokens)
+- [x] ARIA: `role="alert"` + `aria-live` for errors/results; `aria-busy` on async buttons
 - [ ] Full screen-reader audit + alt text — _(no images; a deeper SR audit is still recommended)_
 
 ### 12. Responsive Design — 🟡
@@ -60,12 +60,12 @@
 
 ### 13. Error Handling — ✅
 - [x] Graceful + friendly error messages (alert region)
-- [x] Error boundaries + fallback UI (\`app/error.tsx\` + \`app/global-error.tsx\`) with a retry (reset) button
+- [x] Error boundaries + fallback UI (`app/error.tsx` + `app/global-error.tsx`) with a retry (reset) button
 
 ### 14. Testing — 🟡→✅
 - [x] **Component tests** (Vitest + Testing Library + jsdom) — `web/test/page.test.tsx`, run in CI
 - [x] Integration of user flows via **web HTTP smoke** (`scripts/smoke-api.mjs`, incl. `/api/health`)
-- [ ] E2E (Playwright) — _(next step; component + HTTP smoke cover the flows for now)_
+- [x] E2E (Playwright) — `web/e2e/*.spec.ts`, real Chromium, run in CI
 
 ### 15. Monitoring & Analytics — 🔴
 - [ ] Error/crash/perf monitoring; [ ] analytics/funnels — _(none; planned: Sentry/analytics)_
