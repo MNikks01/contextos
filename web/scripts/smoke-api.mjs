@@ -5,9 +5,15 @@ const BASE = process.env.BASE || "http://localhost:3960";
 const J = (path, body) =>
   fetch(BASE + path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
 
-// 1) create + seed a workspace
-let r = await J("/api/workspace", { project: "acme", seed: true });
+// 0) health probe
+let r = await fetch(BASE + "/api/health");
 let d = await r.json();
+if (!r.ok || d.status !== "ok") throw new Error("health check failed: " + JSON.stringify(d));
+console.log(`✓ /api/health -> ${d.status} (${d.service})`);
+
+// 1) create + seed a workspace
+r = await J("/api/workspace", { project: "acme", seed: true });
+d = await r.json();
 if (!r.ok || d.items.length !== 4) throw new Error("workspace seed failed: " + JSON.stringify(d));
 if (!d.files["CLAUDE.md"].includes("integer cents")) throw new Error("CLAUDE.md missing seeded convention");
 const ws = d.workspaceId;

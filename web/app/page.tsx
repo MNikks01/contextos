@@ -36,14 +36,18 @@ export default function Home() {
   };
 
   const init = useCallback(async () => {
-    const res = await fetch("/api/workspace", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ project: "my-team", seed: true }),
-    });
-    const d = await res.json();
-    setWsId(d.workspaceId);
-    applyState(d);
+    try {
+      const res = await fetch("/api/workspace", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ project: "my-team", seed: true }),
+      });
+      const d = await res.json();
+      setWsId(d.workspaceId);
+      applyState(d);
+    } catch {
+      setError("Could not load the workspace. Refresh to retry.");
+    }
   }, []);
 
   useEffect(() => {
@@ -119,6 +123,8 @@ export default function Home() {
     setAsk(d);
   }
 
+  const field = "rounded-md border border-zinc-300 px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-zinc-700 dark:bg-zinc-900";
+
   return (
     <main className="mx-auto max-w-3xl px-6 py-12">
       <h1 className="text-3xl font-bold tracking-tight">ContextOS</h1>
@@ -127,100 +133,108 @@ export default function Home() {
         so sessions start <em>warm</em>. Export the Context Handoff, or ask questions grounded in your context + code.
       </p>
 
-      {error && <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+      {/* Errors are announced to assistive tech */}
+      <div role="alert" aria-live="assertive">
+        {error && <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-800">{error}</p>}
+      </div>
 
       {/* CONTEXT */}
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold">Team context ({items.length})</h2>
-        <div className="mt-3 divide-y divide-zinc-200 rounded-md border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
+      <section className="mt-8" aria-labelledby="ctx-h">
+        <h2 id="ctx-h" className="text-lg font-semibold">
+          Team context <span aria-label={`${items.length} items`}>({items.length})</span>
+        </h2>
+        <ul className="mt-3 divide-y divide-zinc-200 rounded-md border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800" aria-live="polite">
           {items.map((i) => (
-            <div key={i.id} className="px-3 py-2 text-sm">
-              <span className="rounded bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
-                {i.type}
-              </span>{" "}
+            <li key={i.id} className="px-3 py-2 text-sm">
+              <span className="rounded bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">{i.type}</span>{" "}
               <span className="font-medium">{i.title}</span>
-              <span className="text-zinc-500"> — {i.body}</span>
-            </div>
+              <span className="text-zinc-600 dark:text-zinc-400"> — {i.body}</span>
+            </li>
           ))}
-        </div>
+        </ul>
         <div className="mt-3 flex flex-wrap gap-2">
-          <select value={type} onChange={(e) => setType(e.target.value)} className="rounded-md border border-zinc-300 px-2 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900">
+          <label htmlFor="ctx-type" className="sr-only">Context type</label>
+          <select id="ctx-type" value={type} onChange={(e) => setType(e.target.value)} className={field}>
             {TYPES.map((t) => (
               <option key={t}>{t}</option>
             ))}
           </select>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="title" className="flex-1 rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900" />
-          <input value={body} onChange={(e) => setBody(e.target.value)} placeholder="body" className="flex-[2] rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900" />
-          <button onClick={addContext} className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-black">
+          <label htmlFor="ctx-title" className="sr-only">Title</label>
+          <input id="ctx-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="title" className={`flex-1 ${field}`} />
+          <label htmlFor="ctx-body" className="sr-only">Body</label>
+          <input id="ctx-body" value={body} onChange={(e) => setBody(e.target.value)} placeholder="body" className={`flex-[2] ${field}`} />
+          <button type="button" onClick={addContext} className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-black">
             Add
           </button>
         </div>
       </section>
 
       {/* EXTRACT */}
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold">Capture from text</h2>
-        <p className="text-sm text-zinc-500">Paste a PR description, chat, or notes — extract candidate decisions/conventions.</p>
-        <textarea value={extractText} onChange={(e) => setExtractText(e.target.value)} rows={4} className="mt-2 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900" placeholder="We decided to use idempotency keys. Convention: never log raw card numbers." />
-        <button onClick={runExtract} className="mt-2 rounded-md border border-zinc-300 px-4 py-2 text-sm dark:border-zinc-700">Extract proposals</button>
+      <section className="mt-8" aria-labelledby="extract-h">
+        <h2 id="extract-h" className="text-lg font-semibold">Capture from text</h2>
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">Paste a PR description, chat, or notes — extract candidate decisions/conventions.</p>
+        <label htmlFor="extract-text" className="sr-only">Text to extract context from</label>
+        <textarea id="extract-text" value={extractText} onChange={(e) => setExtractText(e.target.value)} rows={4} className={`mt-2 w-full ${field}`} placeholder="We decided to use idempotency keys. Convention: never log raw card numbers." />
+        <button type="button" onClick={runExtract} className="mt-2 rounded-md border border-zinc-300 px-4 py-2 text-sm dark:border-zinc-700">Extract proposals</button>
         {proposals.length > 0 && (
-          <div className="mt-3 space-y-2">
+          <ul className="mt-3 space-y-2">
             {proposals.map((p, idx) => (
-              <div key={idx} className="flex items-center justify-between rounded-md border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-800">
-                <span><span className="text-xs text-zinc-500">[{p.type} · {p.confidence}]</span> {p.title}</span>
-                <button onClick={() => acceptProposal(p)} className="rounded-md bg-emerald-600 px-3 py-1 text-xs font-medium text-white">Accept</button>
-              </div>
+              <li key={idx} className="flex items-center justify-between rounded-md border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-800">
+                <span><span className="text-xs text-zinc-600 dark:text-zinc-400">[{p.type} · {p.confidence}]</span> {p.title}</span>
+                <button type="button" onClick={() => acceptProposal(p)} aria-label={`Accept proposal: ${p.title}`} className="rounded-md bg-emerald-700 px-3 py-1 text-xs font-medium text-white">Accept</button>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </section>
 
       {/* HANDOFF */}
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold">Context Handoff</h2>
+      <section className="mt-8" aria-labelledby="handoff-h">
+        <h2 id="handoff-h" className="text-lg font-semibold">Context Handoff</h2>
         <div className="mt-2 flex gap-2">
           <a href={`/api/export?workspaceId=${wsId}`} className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-black">Download bundle (.json)</a>
         </div>
-        <p className="mt-3 text-sm text-zinc-500">Generated <code>CLAUDE.md</code> (what a fresh AI session loads):</p>
-        <pre className="mt-1 max-h-72 overflow-auto rounded-md border border-zinc-200 bg-zinc-50 p-3 text-xs dark:border-zinc-800 dark:bg-zinc-900">{claudeMd}</pre>
+        <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">Generated <code>CLAUDE.md</code> (what a fresh AI session loads):</p>
+        <pre className="mt-1 max-h-72 overflow-auto rounded-md border border-zinc-200 bg-zinc-50 p-3 text-xs dark:border-zinc-800 dark:bg-zinc-900" aria-label="Generated CLAUDE.md preview">{claudeMd}</pre>
       </section>
 
       {/* GROUNDED ASK */}
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold">Ask (grounded in context + code)</h2>
+      <section className="mt-8" aria-labelledby="ask-h">
+        <h2 id="ask-h" className="text-lg font-semibold">Ask (grounded in context + code)</h2>
         <div className="mt-2 flex flex-wrap items-center gap-3">
-          <span className="text-sm text-zinc-400">Optionally upload a .zip of your repo:</span>
-          <input type="file" accept=".zip" onChange={uploadCode} disabled={busy === "index"} className="text-xs" />
-          {codeStats && <span className="text-sm text-emerald-600">✓ {codeStats.files} files / {codeStats.chunks} chunks</span>}
+          <label htmlFor="repo-zip" className="text-sm text-zinc-600 dark:text-zinc-400">Optionally upload a .zip of your repo:</label>
+          <input id="repo-zip" type="file" accept=".zip" onChange={uploadCode} disabled={busy === "index"} className="text-xs" />
+          {codeStats && <span className="text-sm text-emerald-700 dark:text-emerald-500" aria-live="polite">✓ {codeStats.files} files / {codeStats.chunks} chunks</span>}
         </div>
         <div className="mt-2 flex gap-2">
-          <input value={question} onChange={(e) => setQuestion(e.target.value)} onKeyDown={(e) => e.key === "Enter" && runAsk()} className="flex-1 rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900" placeholder="how does X work here?" />
-          <button onClick={runAsk} disabled={busy === "ask"} className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black">{busy === "ask" ? "…" : "Ask"}</button>
+          <label htmlFor="ask-q" className="sr-only">Your question</label>
+          <input id="ask-q" value={question} onChange={(e) => setQuestion(e.target.value)} onKeyDown={(e) => e.key === "Enter" && runAsk()} className={`flex-1 ${field}`} placeholder="how does X work here?" />
+          <button type="button" onClick={runAsk} disabled={busy === "ask"} aria-busy={busy === "ask"} className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black">{busy === "ask" ? "…" : "Ask"}</button>
         </div>
         {ask && (
-          <div className="mt-3 space-y-3 text-sm">
+          <div className="mt-3 space-y-3 text-sm" aria-live="polite">
             {ask.grounded && (
               <div className="rounded-md border border-zinc-200 p-3 dark:border-zinc-800">
-                <div className="mb-1 text-xs font-medium text-zinc-500">Answer</div>
+                <div className="mb-1 text-xs font-medium text-zinc-600 dark:text-zinc-400">Answer</div>
                 <div className="whitespace-pre-wrap">{ask.answer}</div>
               </div>
             )}
-            {!ask.grounded && <p className="text-xs text-zinc-400">Retrieval-only (no LLM key). Showing relevant context + code; set ANTHROPIC_API_KEY for a written answer.</p>}
+            {!ask.grounded && <p className="text-xs text-zinc-600 dark:text-zinc-400">Retrieval-only (no LLM key). Showing relevant context + code; set ANTHROPIC_API_KEY for a written answer.</p>}
             {ask.contextItems.length > 0 && (
               <div>
-                <div className="text-xs font-medium text-zinc-500">Relevant team context</div>
+                <h3 className="text-xs font-medium text-zinc-600 dark:text-zinc-400">Relevant team context</h3>
                 {ask.contextItems.map((i) => (
                   <div key={i.id} className="mt-1 rounded-md border border-zinc-200 px-3 py-2 dark:border-zinc-800">
-                    <span className="text-xs text-zinc-500">[{i.type}]</span> <span className="font-medium">{i.title}</span> — {i.body}
+                    <span className="text-xs text-zinc-600 dark:text-zinc-400">[{i.type}]</span> <span className="font-medium">{i.title}</span> — {i.body}
                   </div>
                 ))}
               </div>
             )}
             {ask.codeCitations.length > 0 && (
               <div>
-                <div className="text-xs font-medium text-zinc-500">Code evidence</div>
+                <h3 className="text-xs font-medium text-zinc-600 dark:text-zinc-400">Code evidence</h3>
                 {ask.codeCitations.map((c) => (
-                  <div key={`${c.path}:${c.startLine}`} className="mt-1 font-mono text-xs text-zinc-600 dark:text-zinc-300">
+                  <div key={`${c.path}:${c.startLine}`} className="mt-1 font-mono text-xs text-zinc-700 dark:text-zinc-300">
                     {c.path}:{c.startLine}-{c.endLine}{c.symbol ? ` · ${c.symbol}` : ""}
                   </div>
                 ))}

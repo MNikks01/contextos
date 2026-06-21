@@ -3,6 +3,7 @@
 > **Legend:** `[x]` done · `[ ]` not yet · tags: _(partial)_, _(planned — production)_, _(N/A — MVP stage)_, _(N/A — stack: we use X)_.
 > **Honest framing:** this repo is an **MVP** — a zero-network, zero-dep TypeScript **engine** wrapped by thin surfaces (CLI / MCP / Next.js). Production concerns (auth, real DB, deploy, scale, compliance) are **specified in the root spec docs but deliberately deferred**. Marks reflect the **actual code today**, not the spec's aspirations.
 > Applies to the repo's Next.js app (`web/`). The apps are intentionally lean (a few screens over the engine).
+> **★ ContextOS is the reference implementation** for closing the top frontend gaps — a11y pass, component tests, error boundaries (+ a backend `/health`). Other repos can replicate this pattern.
 
 ## Level 1 — Frontend Engineer
 
@@ -46,21 +47,25 @@
 - [~] `memo`/`useMemo`/`useCallback` where it matters
 - [ ] Lazy loading / image optimization (WebP/AVIF) — _(few/no images)_
 
-### 11. Accessibility — 🔴→🟡 (known weak spot)
-- [~] Semantic HTML; [~] labels; [~] keyboard (Enter handlers); [~] contrast (Tailwind defaults)
-- [ ] Screen-reader pass; [ ] focus management; [ ] ARIA labels; [ ] alt text — _(not audited; needs a real a11y pass)_
+### 11. Accessibility — ✅ (reference a11y pass done)
+- [x] Semantic HTML (landmark regions via \`aria-labelledby\`, \`<ul>/<li>\`, heading hierarchy)
+- [x] Labels for every control (\`htmlFor\` + \`sr-only\`; no placeholder-only inputs)
+- [x] Keyboard operable; [x] visible focus (\`focus-visible\` outlines); [x] AA contrast (darkened tokens)
+- [x] ARIA: \`role="alert"\` + \`aria-live\` for errors/results; \`aria-busy\` on async buttons
+- [ ] Full screen-reader audit + alt text — _(no images; a deeper SR audit is still recommended)_
 
 ### 12. Responsive Design — 🟡
 - [~] Mobile/tablet/desktop via Tailwind breakpoints (some grids responsive)
 - [ ] Verified across devices / slow-3G / offline — _(not tested; UI not click-tested headlessly)_
 
-### 13. Error Handling — 🟡
-- [x] Graceful + friendly error messages
-- [ ] Error boundaries / fallback UI; [ ] retry buttons — _(mostly missing)_
+### 13. Error Handling — ✅
+- [x] Graceful + friendly error messages (alert region)
+- [x] Error boundaries + fallback UI (\`app/error.tsx\` + \`app/global-error.tsx\`) with a retry (reset) button
 
-### 14. Testing — 🟡
-- [x] Integration of user flows via **web HTTP smoke** (`scripts/smoke-api.mjs`)
-- [ ] Component/hook unit tests; [ ] E2E (Playwright) — _(not added; API-level covered)_
+### 14. Testing — 🟡→✅
+- [x] **Component tests** (Vitest + Testing Library + jsdom) — `web/test/page.test.tsx`, run in CI
+- [x] Integration of user flows via **web HTTP smoke** (`scripts/smoke-api.mjs`, incl. `/api/health`)
+- [ ] E2E (Playwright) — _(next step; component + HTTP smoke cover the flows for now)_
 
 ### 15. Monitoring & Analytics — 🔴
 - [ ] Error/crash/perf monitoring; [ ] analytics/funnels — _(none; planned: Sentry/analytics)_
