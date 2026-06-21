@@ -11,7 +11,14 @@ const env = { ...process.env, CODEBASE_PATH: resolve(here, "../../engine/src") }
 const child = spawn("node", [resolve(here, "../src/server.ts")], { stdio: ["pipe", "pipe", "inherit"], env });
 
 let buf = "";
-const pending = new Map<number, (m: any) => void>();
+interface RpcMessage {
+  jsonrpc?: string;
+  id?: number;
+  method?: string;
+  params?: unknown;
+  result?: { serverInfo?: { name?: string }; tools?: { name: string }[]; content?: { type: string; text: string }[]; [k: string]: unknown };
+}
+const pending = new Map<number, (m: RpcMessage) => void>();
 child.stdout.on("data", (chunk) => {
   buf += chunk.toString();
   let nl: number;
@@ -19,14 +26,14 @@ child.stdout.on("data", (chunk) => {
     const line = buf.slice(0, nl).trim();
     buf = buf.slice(nl + 1);
     if (!line) continue;
-    let msg: any;
-    try { msg = JSON.parse(line); } catch { continue; }
+    let msg: RpcMessage;
+    try { msg = JSON.parse(line) as RpcMessage; } catch { continue; }
     if (msg.id && pending.has(msg.id)) { pending.get(msg.id)!(msg); pending.delete(msg.id); }
   }
 });
-const send = (o: any) => child.stdin.write(JSON.stringify(o) + "\n");
-const request = (id: number, method: string, params?: any) =>
-  new Promise<any>((res) => { pending.set(id, res); send({ jsonrpc: "2.0", id, method, params }); });
+const send = (o: unknown) => child.stdin.write(JSON.stringify(o) + "\n");
+const request = (id: number, method: string, params?: unknown) =>
+  new Promise<RpcMessage>((res) => { pending.set(id, res); send({ jsonrpc: "2.0", id, method, params }); });
 
 function assert(cond: boolean, label: string) {
   if (!cond) { console.error(`✗ ${label}`); child.kill(); process.exit(1); }
@@ -37,7 +44,7 @@ const init = await request(1, "initialize", { protocolVersion: "2024-11-05", cap
 assert(init.result?.serverInfo?.name === "contextos", `initialize -> ${init.result?.serverInfo?.name}`);
 send({ jsonrpc: "2.0", method: "notifications/initialized" });
 
-const names = ((await request(2, "tools/list", {})).result?.tools ?? []).map((t: any) => t.name);
+const names = ((await request(2, "tools/list", {})).result?.tools ?? []).map((t) => t.name);
 assert(
   ["load_context", "list_context", "propose_context", "add_context", "ask"].every((n) => names.includes(n)),
   `tools/list -> ${names.join(", ")}`,
