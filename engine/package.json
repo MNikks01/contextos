@@ -1,10 +1,11 @@
 {
-  "name": "contextos-engine",
+  "name": "@mnikks01/contextos",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "description": "ContextOS (#1) engine — durable team context + the Context Handoff: capture decisions/conventions/glossary, export a portable bundle (+ generated CLAUDE.md / AGENTS.md / llms.txt), restore into any AI tool, diff, and extract context from text. Node native TypeScript; zero-network.",
-  "bin": { "contextos": "src/cli.ts" },
+  "bin": {
+    "contextos": "src/cli.ts"
+  },
   "scripts": {
     "cli": "node src/cli.ts",
     "demo": "node scripts/demo.ts",
@@ -12,5 +13,23 @@
     "test": "node --test test/*.test.ts",
     "vendor:check": "node scripts/vendor-codebase-engine.mjs --check"
   },
-  "engines": { "node": ">=22.18" }
+  "engines": {
+    "node": ">=23.6"
+  },
+  "license": "Apache-2.0",
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MNikks01/contextos.git",
+    "directory": "engine"
+  },
+  "homepage": "https://github.com/MNikks01/contextos#readme",
+  "bugs": "https://github.com/MNikks01/contextos/issues",
+  "publishConfig": {
+    "access": "public"
+  }
 }
