@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "description": "ContextOS (#1) engine — durable team context + the Context Handoff: capture decisions/conventions/glossary, export a portable bundle (+ generated CLAUDE.md / AGENTS.md / llms.txt), restore into any AI tool, diff, and extract context from text. Node native TypeScript; zero-network.",
+  "bin": { "contextos": "src/cli.ts" },
   "scripts": {
+    "cli": "node src/cli.ts",
     "demo": "node scripts/demo.ts",
     "demo:grounded": "node scripts/demo-grounded.ts",
     "test": "node --test test/*.test.ts",

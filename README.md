@@ -8,6 +8,15 @@
 
 **▶ Try it / deploy your own:** [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FMNikks01%2Fcontextos&root-directory=web&project-name=contextos) · see [DEPLOY.md](./DEPLOY.md) for CLI & self-hosting.
 
+**🖥️ CLI:** capture durable team context and hand it off to any AI session. From a clone (`npm link` in `engine/` to get the `contextos` command, or run directly):
+```bash
+node engine/src/cli.ts add decision "Use integer cents for money" "Avoid floats"
+node engine/src/cli.ts list
+node engine/src/cli.ts files            # write CLAUDE.md / AGENTS.md / llms.txt
+node engine/src/cli.ts export -o handoff.json
+node engine/src/cli.ts ask "how is money stored?"
+```
+
 
 > **The context and governance operating system for AI-assisted engineering teams.** ContextOS is what you get when you fuse *Cursor + Claude Code + Notion + GitHub + MCP + a persistent memory layer* into one platform — so that every AI tool, agent, session, and teammate shares the same institutional memory and operates under the same controls.
 
