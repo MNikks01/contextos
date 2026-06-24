@@ -1,6 +1,6 @@
 {
   "name": "@mnikks01/contextos",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "ContextOS (#1) engine — durable team context + the Context Handoff: capture decisions/conventions/glossary, export a portable bundle (+ generated CLAUDE.md / AGENTS.md / llms.txt), restore into any AI tool, diff, and extract context from text. Node native TypeScript; zero-network.",
   "bin": {
