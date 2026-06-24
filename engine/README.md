@@ -1,5 +1,19 @@
 # ContextOS — engine (Phase A: the Context Handoff) ✅
 
+## Install & CLI
+
+capture durable team context and hand it off to any AI session. Requires Node ≥23.6 (runs on Node's native TypeScript).
+
+```bash
+npm i -g @mnikks01/contextos    # then run `contextos …`, or use npx without installing:
+npx @mnikks01/contextos add decision "Use integer cents for money" "Avoid floats"
+npx @mnikks01/contextos list
+npx @mnikks01/contextos files            # write CLAUDE.md / AGENTS.md / llms.txt
+npx @mnikks01/contextos export -o handoff.json
+npx @mnikks01/contextos ask "how is money stored?"
+```
+
+
 The core engine for project #1, the flagship. ContextOS gives AI-assisted teams **durable, shared context** — decisions, conventions, glossary — and the **Context Handoff**: export that context as a portable bundle (+ generated `CLAUDE.md` / `AGENTS.md` / `llms.txt`) so any AI tool or fresh session **starts warm** instead of re-deriving everything. Pure TypeScript, **Node 24 native TS, zero-network**.
 
 > The wedge: today every AI session starts cold and re-learns (or forgets) the team's decisions. ContextOS makes context a durable, portable, governed asset. The open Handoff format is the strategic moat.
