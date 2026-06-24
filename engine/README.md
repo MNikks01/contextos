@@ -2,7 +2,7 @@
 
 ## Install & CLI
 
-capture durable team context and hand it off to any AI session. Requires Node ≥23.6 (runs on Node's native TypeScript).
+capture durable team context and hand it off to any AI session. Requires Node ≥18.
 
 ```bash
 npm i -g @mnikks01/contextos    # then run `contextos …`, or use npx without installing:

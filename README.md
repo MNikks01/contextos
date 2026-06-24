@@ -8,7 +8,7 @@
 
 **▶ Try it / deploy your own:** [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FMNikks01%2Fcontextos&root-directory=web&project-name=contextos) · see [DEPLOY.md](./DEPLOY.md) for CLI & self-hosting.
 
-**🖥️ CLI:** capture durable team context and hand it off to any AI session — published on npm (needs Node ≥23.6):
+**🖥️ CLI:** capture durable team context and hand it off to any AI session — published on npm (needs Node ≥18):
 ```bash
 npm i -g @mnikks01/contextos    # installs the `contextos` command — or use npx (no install) below
 npx @mnikks01/contextos add decision "Use integer cents for money" "Avoid floats"
